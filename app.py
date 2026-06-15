@@ -44,21 +44,29 @@ st.markdown("""
         background-color: #1A1A1A !important;
         border: none !important;
         border-radius: 20px;
-        padding: 30px 20px;
+        padding: 35px 20px;
         text-align: center;
         box-shadow: none !important;
         margin-bottom: 30px;
     }
     
-    /* Força o espaçamento do título dentro do bloco */
-    .header-box h1 {
-        margin: 0 !important;
-        font-size: 2.3rem !important;
+    /* CORREÇÃO DA FONTE E TAMANHO DO TÍTULO INTERNO */
+    .header-title {
+        color: #FFCC00 !important;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+        font-weight: 900 !important;
+        font-size: 2.5rem !important; /* Aumentado para dar destaque */
+        margin-top: 20px !important;
+        margin-bottom: 12px !important;
+        letter-spacing: -0.5px;
     }
-    .header-box .divisor-bandeirinhas {
+    
+    /* Estilização do Divisor de Bandeirinhas Interno */
+    .header-divisor {
         font-size: 1.5rem;
         letter-spacing: 8px;
-        margin-top: 10px;
+        color: #FFFFFF !important;
+        margin-top: 5px;
     }
     
     /* --- CONFIGURAÇÃO DAS ABAS (CENTRALIZADAS E MAIORES) --- */
@@ -150,7 +158,8 @@ st.markdown("""
         border-left: 8px solid #FFFFFF !important;
         border-radius: 16px;
         padding: 24px;
-        margin-bottom: 20px;
+        margin-top: 15px !important;
+        margin-bottom: 25px !important;
     }
     .delivery-card .delivery-header {
         font-weight: 800;
@@ -165,14 +174,16 @@ st.markdown("""
         border-left: 3px solid #FFCC00;
     }
     
-    /* --- RETÂNGULO BRANCO PARA RESULTADO DE PALPITES --- */
+    /* --- RETÂNGULO BRANCO PARA RESULTADO DE PALPITES E ADVERTÊNCIAS --- */
     .resultado-palpite-box {
         background-color: #FFFFFF !important;
         border: 2px solid #1A1A1A !important;
         border-radius: 12px;
         padding: 18px;
-        margin-top: 10px;
+        margin-top: 20px !important;
+        margin-bottom: 35px !important;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+        display: block !important;
     }
     .resultado-palpite-box p {
         color: #1A1A1A !important;
@@ -212,8 +223,8 @@ if 'ja_enviou' not in st.session_state:
 st.markdown("""
 <div class="header-box">
     <img src="https://99app.com/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fx9sul3ikm35w%2F2kYcs2M15uM3cYchuoDRvG%2Ffd6069a06d44476d143559243510a929%2Fimage.png&w=384&q=75" width="95" style="display: block; margin: 0 auto;">
-    <div class="header-title" style="color: #FFCC00 !important; font-weight: 900 !important; font-size: 2.3rem !important; margin-top: 15px; margin-bottom: 10px;">🔥 ARRAIÁ 99Food</div>
-    <div class="header-divisor" style="color: #FFFFFF !important; font-size: 1.5rem; letter-spacing: 8px; margin-top: 5px;">🎏🍿🌽🔥🌽🍿🎏</div>
+    <div class="header-title">🔥 ARRAIÁ 99Food</div>
+    <div class="header-divisor">🎏🍿🌽🔥🌽🍿🎏</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -225,7 +236,7 @@ st.markdown("""
     <ul style="margin-top: 0; padding-left: 20px;">
         <li style="margin-bottom: 4px;"><strong>Enviar um Recadinho:</strong> Pule para a aba <em>"Enviar Mensagem"</em>, coloque o nome do colega e complete a frase lembrando de um momento em que essa pessoa foi uma verdadeira parceira e "salvou o seu dia" na empresa. O envio é 100% anônimo!</li>
         <li style="margin-bottom: 4px;"><strong>Adivinhar no Mural:</strong> Na aba <em>"Mural de Entregas"</em>, ficam expostos os balões e mensagens do nosso time. Se achar um recado para você, clareie a mente e tente adivinhar o remetente. <strong>Cuidado:</strong> você só tem <u>uma única chance</u> para dar o seu palpite!</li>
-        <li>⚠️ <strong>Regra do Arraiá:</strong> O mural de entregas é exclusivo para quem também espalhou carinho! Você só conseguirá visualizar os recados e dar seus palpites após enviar pelo menos uma mensagem para um colega nesta sessão.</li>
+        <li>⚠️ <strong>Regra do Arraiá:</strong> O mural de entregas é exclusive para quem também espalhou carinho! Você só conseguirá visualizar os recados e dar seus palpites após enviar pelo menos uma mensagem para um colega nesta sessão.</li>
     </ul>
 </div>
 """, unsafe_allow_html=True)
@@ -313,11 +324,15 @@ with aba_mural:
                                     msg["acertou"] = normalizar_nome(chute) in normalizar_nome(msg["remetente"])
                                     st.rerun()
                                 else:
-                                    st.warning(f"✋ Ei, sô! Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊")
+                                    st.markdown(f"""
+                                    <div class="resultado-palpite-box" style="border-left: 6px solid #FF9900 !important;">
+                                        <p>✋ <b>Ei, sô!</b> Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊</p>
+                                    </div>
+                                    """, unsafe_allow_html=True)
                             else:
                                 st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
                 
-                # SE O PALPITE JÁ FOI FEITO: Exibe os resultados em retângulos brancos limpos
+                # SE O PALPITE JÁ FOI FEITO
                 else:
                     if msg["acertou"]:
                         st.markdown(f"""
@@ -326,7 +341,6 @@ with aba_mural:
                         </div>
                         """, unsafe_allow_html=True)
                     else:
-                        # CORREÇÃO: Revela abertamente o remetente real no caso de erro!
                         st.markdown(f"""
                         <div class="resultado-palpite-box" style="border-left: 6px solid #dc3545 !important;">
                             <p>❌ <b>Não foi dessa vez, {msg['quem_palpitou']}!</b> Você chutou '{msg['palpite']}', mas quem assinou esse recado especial na verdade foi o(a) <b>{msg['remetente']}</b>!</p>
