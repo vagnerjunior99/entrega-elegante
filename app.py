@@ -5,13 +5,30 @@ from datetime import datetime
 # Configuração da página
 st.set_page_config(page_title="Entrega Elegante 99Food", page_icon="🌽", layout="centered")
 
-# --- INJEÇÃO DE IDENTIDADE VISUAL (99FOOD + FESTA JUNINA CSS) ---
+# --- INJEÇÃO DE IDENTIDADE VISUAL CORRIGIDA (99FOOD + FESTA JUNINA CSS) ---
 st.markdown("""
     <style>
-    /* Cor de fundo geral da página e fontes */
+    /* Força o fundo da página a ser claro e os textos gerais escuros */
     .stApp {
-        background-color: #F8F9FA;
+        background-color: #F8F9FA !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    
+    /* Força a cor preta em todos os textos de labels e inputs nativos do Streamlit */
+    .stApp label, .stApp p, .stApp span, .stApp div {
+        color: #1A1A1A !important;
+    }
+    
+    /* Ajusta os campos de entrada de texto para que fiquem legíveis em qualquer modo */
+    input, textarea {
+        background-color: #FFFFFF !important;
+        color: #1A1A1A !important;
+        border: 1px solid #CCCCCC !important;
+    }
+    
+    /* Mantém o placeholder visível */
+    input::placeholder, textarea::placeholder {
+        color: #888888 !important;
     }
     
     /* Customização do Título Principal */
@@ -26,53 +43,57 @@ st.markdown("""
     
     /* Bloco do Enunciado / Regras do Arraiá */
     .enunciado-container {
-        background-color: #FFFFFF;
-        border: 2px dashed #FFCC00; /* Borda tracejada estilo caipira */
+        background-color: #FFFFFF !important;
+        border: 2px dashed #FFCC00 !important;
         border-radius: 10px;
         padding: 20px;
         margin-bottom: 30px;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.02);
     }
     .enunciado-titulo {
-        color: #E6B800; /* Tom de ouro junino */
-        font-weight: bold;
-        font-size: 1.2rem;
+        color: #E6B800 !important;
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
         margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
     }
     
-    /* Abas estilizadas no padrão da marca */
+    /* Abas estilizadas no padrão da marca (fundo escuro da aba e letras brancas) */
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
-        background-color: #1A1A1A;
+        background-color: #1A1A1A !important;
         padding: 8px;
         border-radius: 10px;
     }
     .stTabs [data-baseweb="tab"] {
-        color: #FFFFFF !important;
-        font-weight: 600;
-        background-color: transparent;
+        background-color: transparent !important;
         border-radius: 5px;
         padding: 10px 20px;
     }
+    /* Força o texto das abas não selecionadas a ser branco */
+    .stTabs [data-baseweb="tab"] p {
+        color: #FFFFFF !important;
+    }
+    /* Quando selecionada, vira amarelo 99 com texto escuro */
     .stTabs [aria-selected="true"] {
         background-color: #FFCC00 !important;
+    }
+    .stTabs [aria-selected="true"] p {
         color: #1A1A1A !important;
     }
 
     /* Estilização dos Botões da 99Food */
     div.stButton > button:first-child {
         background-color: #FFCC00 !important;
-        color: #1A1A1A !important;
-        font-weight: bold !important;
         border: none !important;
         border-radius: 8px !important;
         padding: 10px 24px !important;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         width: 100%;
+    }
+    div.stButton > button:first-child p {
+        color: #1A1A1A !important;
+        font-weight: bold !important;
     }
     div.stButton > button:first-child:hover {
         background-color: #E6B800 !important;
@@ -81,25 +102,24 @@ st.markdown("""
     
     /* Caixa de Mensagem / Card do Mural */
     .delivery-card {
-        background-color: #FFFFFF;
-        border-left: 8px solid #FFCC00;
+        background-color: #FFFFFF !important;
+        border-left: 8px solid #FFCC00 !important;
         border-radius: 12px;
         padding: 20px;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
         margin-bottom: 20px;
-        color: #1A1A1A;
     }
     .delivery-header {
-        font-size: 1.1rem;
-        font-weight: bold;
-        color: #1A1A1A;
+        font-size: 1.1rem !important;
+        font-weight: bold !important;
+        color: #1A1A1A !important;
         margin-bottom: 10px;
     }
     .delivery-text {
-        font-size: 1rem;
-        font-style: italic;
-        color: #4A4A4A;
-        background-color: #F8F9FA;
+        font-size: 1rem !important;
+        font-style: italic !important;
+        color: #4A4A4A !important;
+        background-color: #F8F9FA !important;
         padding: 12px;
         border-radius: 8px;
         margin-bottom: 15px;
@@ -121,15 +141,15 @@ if 'mensagens' not in st.session_state:
         }
     ]
 
-# Título atualizado
+# Título
 st.markdown("<h1>🔥 ENTREGA ELEGANTE 99Food</h1>", unsafe_allow_html=True)
 
-# --- BLOCO DE ENUNCIADO ATUALIZADO ---
+# --- BLOCO DE ENUNCIADO ---
 st.markdown("""
 <div class="enunciado-container">
     <div class="enunciado-titulo">🍿 🎏 Olha a Entrega Elegante! É verdade!</div>
-    <p style="margin-bottom: 8px; color: #333;">O São João chegou na 99Food! Para celebrar, misturamos a tradição do <strong>Correio Elegante Junino</strong> com a agilidade da <strong>99Food</strong> em um arraiá de reconhecimento corporativo. Veja como participar:</p>
-    <ul style="margin-top: 0; padding-left: 20px; color: #4A4A4A;">
+    <p style="margin-bottom: 8px;">O São João chegou na 99Food! Para celebrar, misturamos a tradição do <strong>Correio Elegante Junino</strong> com a agilidade da <strong>99Food</strong> em um arraiá de reconhecimento corporativo. Veja como participar:</p>
+    <ul style="margin-top: 0; padding-left: 20px;">
         <li><strong>Enviar um Recadinho:</strong> Pule para a aba <em>"Enviar Mensagem"</em>, coloque o nome do colega e complete a frase lembrando de um momento em que essa pessoa foi uma verdadeira parceira e "salvou o seu dia" na empresa. O envio é 100% anônimo!</li>
         <li><strong>Adivinhar no Mural:</strong> Na aba <em>"Mural de Entregas"</em>, ficam expostos todos os balões e mensagens do nosso time. Se achar um recado para você, clareie a mente e tente adivinhar o remetente. <strong>Cuidado:</strong> você só tem <u>uma única chance</u> para dar o seu palpite!</li>
     </ul>
@@ -235,5 +255,3 @@ with st.expander("Clique aqui para baixar o relatório final"):
             file_name="relatorio_final_entrega_elegante.csv",
             mime="text/csv"
         )
-    else:
-        st.text("Nenhum dado para exportar ainda.")
