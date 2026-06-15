@@ -5,21 +5,21 @@ from datetime import datetime
 # Configuração da página
 st.set_page_config(page_title="Entrega Elegante 99Food", page_icon="🌽", layout="centered")
 
-# --- INJEÇÃO DE IDENTIDADE VISUAL CORRIGIDA (99FOOD + FESTA JUNINA CSS) ---
+# --- INJEÇÃO DE IDENTIDADE VISUAL CORRIGIDA (BOTOES PRETOS + LETRAS AMARELAS) ---
 st.markdown("""
     <style>
-    /* Força o fundo da página a ser claro e os textos gerais escuros */
+    /* Cor de fundo geral da página e fontes */
     .stApp {
         background-color: #F8F9FA !important;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
     
-    /* Força a cor preta em todos os textos de labels e inputs nativos do Streamlit */
-    .stApp label, .stApp p, .stApp span, .stApp div {
+    /* Força a cor preta em todos os textos de labels e parágrafos */
+    .stApp label, .stApp p, .stApp span, .stApp li {
         color: #1A1A1A !important;
     }
     
-    /* Ajusta os campos de entrada de texto para que fiquem legíveis em qualquer modo */
+    /* Ajusta os campos de entrada de texto */
     input, textarea {
         background-color: #FFFFFF !important;
         color: #1A1A1A !important;
@@ -57,7 +57,7 @@ st.markdown("""
         margin-bottom: 10px;
     }
     
-    /* Abas estilizadas no padrão da marca (fundo escuro da aba e letras brancas) */
+    /* Abas estilizadas no padrão da marca */
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
         background-color: #1A1A1A !important;
@@ -69,11 +69,9 @@ st.markdown("""
         border-radius: 5px;
         padding: 10px 20px;
     }
-    /* Força o texto das abas não selecionadas a ser branco */
     .stTabs [data-baseweb="tab"] p {
         color: #FFFFFF !important;
     }
-    /* Quando selecionada, vira amarelo 99 com texto escuro */
     .stTabs [aria-selected="true"] {
         background-color: #FFCC00 !important;
     }
@@ -81,22 +79,25 @@ st.markdown("""
         color: #1A1A1A !important;
     }
 
-    /* Estilização dos Botões da 99Food */
+    /* --- NOVA ESTILIZAÇÃO DOS BOTÕES: FUNDO PRETO E TEXTO AMARELO --- */
     div.stButton > button:first-child {
-        background-color: #FFCC00 !important;
-        border: none !important;
+        background-color: #1A1A1A !important;
+        border: 2px solid #FFCC00 !important;
         border-radius: 8px !important;
         padding: 10px 24px !important;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15);
         transition: all 0.3s ease;
         width: 100%;
     }
-    div.stButton > button:first-child p {
-        color: #1A1A1A !important;
+    /* Alvo específico para o texto do botão ignorar a regra geral de cor preta */
+    div.stButton > button:first-child p, div.stButton > button:first-child div, div.stButton > button:first-child span {
+        color: #FFCC00 !important;
         font-weight: bold !important;
     }
+    /* Efeito ao passar o mouse: o botão ganha um leve realce */
     div.stButton > button:first-child:hover {
-        background-color: #E6B800 !important;
+        background-color: #262626 !important;
+        border-color: #E6B800 !important;
         transform: translateY(-2px);
     }
     
@@ -255,3 +256,5 @@ with st.expander("Clique aqui para baixar o relatório final"):
             file_name="relatorio_final_entrega_elegante.csv",
             mime="text/csv"
         )
+    else:
+        st.text("Nenhum dado para exportar ainda.")
