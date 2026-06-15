@@ -14,10 +14,10 @@ def normalizar_nome(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
-# --- VISUAL: ARRAIÁ 99 CONSOLIDADO (AMARELO, PRETO E CENTRALIZAÇÃO) ---
+# --- VISUAL: ARRAIÁ 99 CONSOLIDADO ---
 st.markdown("""
     <style>
-    /* Fundo Amarelo Vibrante Oficial da 99 */
+    /* Fundo Amarelo Oficial da 99 */
     .stApp {
         background: #FFCC00 !important;
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -28,22 +28,25 @@ st.markdown("""
         color: #1A1A1A !important;
     }
     
-    /* Inputs Brancos para leitura */
+    /* Inputs Brancos para leitura perfeita */
     input, textarea {
         background-color: #FFFFFF !important;
         color: #1A1A1A !important;
         border: 2px solid #1A1A1A !important;
         border-radius: 8px !important;
     }
+    input::placeholder, textarea::placeholder {
+        color: #777777 !important;
+    }
     
-    /* --- CABEÇALHO PRETO UNIFICADO --- */
+    /* --- CABEÇALHO PRETO LIMPO (SEM BORDA E SEM SOMBRA) --- */
     .header-box {
         background-color: #1A1A1A !important;
-        border: 2px solid #FFFFFF;
+        border: none !important;
         border-radius: 20px;
         padding: 25px;
         text-align: center;
-        box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+        box-shadow: none !important;
         margin-bottom: 30px;
     }
     .header-box h1 {
@@ -58,23 +61,23 @@ st.markdown("""
         margin-top: 10px;
     }
     
-    /* --- CENTRALIZAÇÃO E TAMANHO DAS ABAS --- */
+    /* --- CONFIGURAÇÃO DAS ABAS (CENTRALIZADAS E MAIORES) --- */
     .stTabs [data-baseweb="tab-list"] {
         display: flex !important;
-        justify-content: center !important; /* Centraliza as abas */
-        gap: 20px !important;
+        justify-content: center !important;
+        gap: 15px !important;
         background-color: #1A1A1A !important;
-        padding: 12px !important;
-        border-radius: 15px !important;
+        padding: 10px !important;
+        border-radius: 12px !important;
     }
     .stTabs [data-baseweb="tab"] {
-        height: 50px !important; /* Deixa a aba mais alta */
-        padding-left: 30px !important;
-        padding-right: 30px !important;
-        border-radius: 10px !important;
+        height: 50px !important;
+        padding-left: 25px !important;
+        padding-right: 25px !important;
+        border-radius: 8px !important;
     }
     .stTabs [data-baseweb="tab"] p {
-        font-size: 1.1rem !important;
+        font-size: 1.05rem !important;
         font-weight: bold !important;
         color: #FFFFFF !important;
     }
@@ -85,23 +88,22 @@ st.markdown("""
         color: #1A1A1A !important;
     }
 
-    /* --- BOTÃO DE ENVIO CENTRALIZADO E LARGO --- */
+    /* --- ESTILIZAÇÃO DO BOTÃO DE ENVIO (CENTRALIZADO E IMPONENTE) --- */
     div[data-testid="stFormSubmitButton"] {
         text-align: center !important;
         display: flex;
         justify-content: center;
+        margin-top: 15px;
     }
-    
     button[data-testid="stBaseButton-secondaryFormSubmit"], 
     button[data-testid="stBaseButton-secondary"],
     .stButton > button {
         background-color: #1A1A1A !important;
         border: 2px solid #FFFFFF !important;
         border-radius: 12px !important;
-        padding: 12px 60px !important; /* Aumenta a largura horizontal */
-        box-shadow: 0px 5px 15px rgba(0,0,0,0.2) !important;
-        width: auto !important; /* Impede que o botão estique 100% sem controle */
+        padding: 12px 60px !important;
         min-width: 280px !important;
+        width: auto !important;
         transition: all 0.2s ease !important;
     }
     button[data-testid="stBaseButton-secondaryFormSubmit"] p,
@@ -125,6 +127,23 @@ st.markdown("""
         margin-bottom: 30px;
     }
     
+    /* --- CAIXA DE ALERTA DO MURAL BLOQUEADO STYLED --- */
+    .mural-bloqueado-box {
+        background-color: #1A1A1A !important;
+        border: 2px dashed #FFFFFF !important;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        margin-top: 10px;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+    }
+    .mural-bloqueado-box p {
+        color: #FFFFFF !important;
+        font-weight: bold !important;
+        font-size: 1.1rem !important;
+        margin: 0 !important;
+    }
+    
     /* Cards do Mural em Preto */
     .delivery-card {
         background-color: #1A1A1A !important;
@@ -146,30 +165,35 @@ st.markdown("""
         border-left: 3px solid #FFCC00;
     }
     
-    /* Força centralização dos títulos internos das abas */
     .centered-title {
         text-align: center !important;
         color: #1A1A1A !important;
         font-weight: 800 !important;
-        margin-bottom: 20px !important;
-        font-size: 1.5rem !important;
+        margin-bottom: 25px !important;
+        font-size: 1.4rem !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Inicialização segura
+# Inicialização do Banco de Dados
 if 'mensagens' not in st.session_state:
     st.session_state.mensagens = [
         {
-            "id": 0, "remetente": "Carlos", "destinatario": "Mariana (TI)",
+            "id": 0,
+            "remetente": "Carlos",
+            "destinatario": "Mariana (TI)",
             "mensagem": "Você não é um cupom do 99Food, mas quero te dizer/lembrar que... você salvou o meu dia quando resolveu o problema do meu acesso logo cedo!",
-            "data": "15/06/2026", "quem_palpitou": "", "palpite": "", "palpite_feito": False, "acertou": False
+            "data": "15/06/2026",
+            "quem_palpitou": "",
+            "palpite": "",
+            "palpite_feito": False,
+            "acertou": False
         }
     ]
 if 'ja_enviou' not in st.session_state:
     st.session_state.ja_enviou = False
 
-# --- CABEÇALHO ---
+# --- CABEÇALHO UNIFICADO (PRETO LISO) ---
 st.markdown("""
 <div class="header-box">
     <img src="https://99app.com/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fx9sul3ikm35w%2F2kYcs2M15uM3cYchuoDRvG%2Ffd6069a06d44476d143559243510a929%2Fimage.png&w=384&q=75" width="95">
@@ -178,86 +202,116 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- REGRAS ---
+# --- REGRAS COMPLETAS RECUPERADAS ---
 st.markdown("""
 <div class="enunciado-container">
-    <div style="font-weight:bold; font-size:1.2rem;">🍿 🎏 Olha a Entrega Elegante! É verdade!</div>
-    <p>O São João chegou na 99Food! Envie mensagens anônimas de reconhecimento e tente adivinhar quem te enviou um recado. <strong>Regra:</strong> Você só vê o mural após enviar uma mensagem!</p>
+    <div style="font-weight:bold; font-size:1.25rem; color: #1A1A1A; margin-bottom: 12px;">🍿 🎏 Olha a Entrega Elegante! É verdade!</div>
+    <p style="margin-bottom: 8px;">O São João chegou na 99Food! Para celebrar, misturamos a tradição do <strong>Correio Elegante Junino</strong> com a agilidade da <strong>99Food</strong> em um arraiá de reconhecimento corporativo. Veja como participar:</p>
+    <ul style="margin-top: 0; padding-left: 20px;">
+        <li style="margin-bottom: 4px;"><strong>Enviar um Recadinho:</strong> Pule para a aba <em>"Enviar Mensagem"</em>, coloque o nome do colega e complete a frase lembrando de um momento em que essa pessoa foi uma verdadeira parceira e "salvou o seu dia" na empresa. O envio é 100% anônimo!</li>
+        <li style="margin-bottom: 4px;"><strong>Adivinhar no Mural:</strong> Na aba <em>"Mural de Entregas"</em>, ficam expostos todos os balões e mensagens do nosso time. Se achar um recado para você, clareie a mente e tente adivinhar o remetente. <strong>Cuidado:</strong> você só tem <u>uma única chance</u> para dar o seu palpite!</li>
+        <li>⚠️ <strong>Regra do Arraiá:</strong> O mural de entregas é exclusivo para quem também espalhou carinho! Você só conseguirá visualizar os recados e dar seus palpites após enviar pelo menos uma mensagem para um colega nesta sessão.</li>
+    </ul>
 </div>
 """, unsafe_allow_html=True)
 
 aba_enviar, aba_mural = st.tabs(["💌 Enviar Mensagem", "📌 Mural de Entregas"])
 
-# --- ABA 1: ENVIAR ---
+# --- ABA 1: ENVIAR MENSAGEM ---
 with aba_enviar:
     st.markdown('<div class="centered-title">Prepare seu pedido de agradecimento! 💌</div>', unsafe_allow_html=True)
     
     with st.form(key="form_correio", clear_on_submit=True):
-        remetente = st.text_input("Seu Nome (Ficará escondido):").strip()
+        remetente = st.text_input("Seu Nome (Ficará escondido no mural para o jogo de adivinhação):").strip()
         destinatario = st.text_input("Para quem é a mensagem? (Nome do Colega):").strip()
         
+        st.markdown("<p style='font-weight: bold; margin-bottom: 2px; color:#1A1A1A !important;'>Complete a frase com uma lembrança:</p>", unsafe_allow_html=True)
         texto_base = "Você não é um cupom do 99Food, mas quero te dizer/lembrar que..."
-        lembranca = st.text_area(texto_base, placeholder="Ex: você me ajudou muito no projeto X...")
         
-        st.form_submit_button("Enviar Entrega Elegante 🚀")
+        exemplo_emotivo = "Ex: você me deu a maior força quando aquele projeto deu errado e não me deixou desistir. Obrigado por ser essa liderança/parceira incrível, você salva meu dia sempre!"
+        lembranca = st.text_area(texto_base, placeholder=exemplo_emotivo)
         
-        if st.session_state.get('form_correio'): # Simulação do clique
-            pass # Lógica abaixo
+        botao_enviar = st.form_submit_button("Enviar Entrega Elegante 🚀")
+        
+        if botao_enviar:
+            if remetente and destinatario and lembranca:
+                mensagem_completa = f"{texto_base} {lembranca}"
+                novo_id = len(st.session_state.mensagens)
+                nova_msg = {
+                    "id": novo_id,
+                    "remetente": remetente,
+                    "destinatario": destinatario,
+                    "mensagem": mensagem_completa,
+                    "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "quem_palpitou": "",
+                    "palpite": "",
+                    "palpite_feito": False,
+                    "acertou": False
+                }
+                st.session_state.mensagens.append(nova_msg)
+                st.session_state.ja_enviou = True
+                st.success("Mensagem enviada para a cozinha! Seu acesso ao mural foi liberado. 🛵💨")
+                st.rerun()
+            else:
+                st.error("Por favor, preencha todos os campos antes de enviar.")
 
-    # Verificação de envio fora do form para evitar bugs de Rerun
-    if st.button("Clique aqui para confirmar o envio acima 🚀", key="trigger_envio", help="Finalize o envio da sua mensagem"):
-        if remetente and destinatario and lembranca:
-            nova_msg = {
-                "id": len(st.session_state.mensagens),
-                "remetente": remetente, "destinatario": destinatario,
-                "mensagem": f"{texto_base} {lembranca}",
-                "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
-                "quem_palpitou": "", "palpite": "", "palpite_feito": False, "acertou": False
-            }
-            st.session_state.mensagens.append(nova_msg)
-            st.session_state.ja_enviou = True
-            st.success("Mensagem enviada! Mural liberado. 🛵💨")
-            st.rerun()
-
-# --- ABA 2: MURAL ---
+# --- ABA 2: MURAL DE ENTREGAS ---
 with aba_mural:
     st.markdown('<div class="centered-title">👀 Quem recebeu uma entrega hoje?</div>', unsafe_allow_html=True)
     
     if not st.session_state.ja_enviou:
-        st.warning("🔒 Envie uma mensagem primeiro para liberar o mural!")
+        # Caixa estilizada preta com letras brancas substituindo o warning padrão apagado
+        st.markdown("""
+        <div class="mural-bloqueado-box">
+            <p>🔒 Ei, sô! Para conseguir ver o Mural e brincar de adivinhar, você precisa enviar um recadinho primeiro. Vá na aba 'Enviar Mensagem' e colabore com o time!</p>
+        </div>
+        """, unsafe_allow_html=True)
     else:
-        for msg in reversed(st.session_state.mensagens):
-            st.markdown(f"""
-            <div class="delivery-card">
-                <div class="delivery-header">💛 Para: {msg['destinatario']}</div>
-                <div class="delivery-text">"{msg['mensagem']}"</div>
-                <div style="font-size: 0.8rem; color: #777; margin-top:10px;">Entregue em {msg['data']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            if not msg["palpite_feito"]:
-                with st.form(key=f"palpite_{msg['id']}"):
-                    ident = st.text_input("Seu Nome:", key=f"id_{msg['id']}").strip()
-                    chute = st.text_input("Quem mandou?", key=f"ch_{msg['id']}").strip()
-                    if st.form_submit_button("Confirmar Palpite 🔒"):
-                        if normalizar_nome(ident) in normalizar_nome(msg['destinatario']):
-                            msg["palpite_feito"] = True
-                            msg["quem_palpitou"] = ident
-                            msg["palpite"] = chute
-                            msg["acertou"] = normalizar_nome(chute) in normalizar_nome(msg['remetente'])
-                            st.rerun()
-                        else:
-                            st.error("Ei! Esse recado não é para você. 😉")
-            else:
-                if msg["acertou"]:
-                    st.success(f"🎉 Acertou! Foi o(a) {msg['remetente']}!")
+        if len(st.session_state.mensagens) == 0:
+            st.info("Nenhuma entrega feita ainda. Seja o primeiro!")
+        else:
+            for msg in reversed(st.session_state.mensagens):
+                orig_id = msg["id"]
+                
+                st.markdown(f"""
+                <div class="delivery-card">
+                    <div class="delivery-header">💛 Para: {msg['destinatario']}</div>
+                    <div class="delivery-text">"{msg['mensagem']}"</div>
+                    <div style="font-size: 0.8rem; color: #999; margin-top:10px;">Status: Entregue com sucesso • {msg['data']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if not msg["palpite_feito"]:
+                    with st.form(key=f"form_palpite_{orig_id}"):
+                        st.markdown("<p style='font-weight: bold; color: #1A1A1A !important;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
+                        identificacao = st.text_input("Seu Nome (Quem está adivinhando):", key=f"id_{orig_id}", placeholder="Digite seu nome para validar...").strip()
+                        chute = st.text_input("Quem você acha que enviou?", key=f"chute_{orig_id}", placeholder="Nome do colega do chute...").strip()
+                        
+                        botao_palpite = st.form_submit_button("Confirmar Palpite (Apenas 1 chance!) 🔒")
+                        
+                        if botao_palpite:
+                            if identificacao and chute:
+                                if normalizar_nome(identificacao) in normalizar_nome(msg["destinatario"]):
+                                    msg["palpite_feito"] = True
+                                    msg["quem_palpitou"] = identificacao
+                                    msg["palpite"] = chute
+                                    msg["acertou"] = normalizar_nome(chute) in normalizar_nome(msg["remetente"])
+                                    st.rerun()
+                                else:
+                                    st.warning(f"✋ Ei, sô! Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊")
+                            else:
+                                st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
                 else:
-                    st.error(f"❌ Não foi dessa vez! Quem assinou foi o(a) {msg['remetente']}!")
+                    if msg["acertou"]:
+                        st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse recado especial!")
+                    else:
+                        st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem assinou na verdade foi o(a) **{msg['remetente']}**!")
 
-# --- ADM ---
+# --- ÁREA DO ADMINISTRADOR ---
 if st.query_params.get("adm") == "true":
     st.markdown("---")
     if st.text_input("Senha Master:", type="password") == "99food2026":
         st.dataframe(pd.DataFrame(st.session_state.mensagens))
         if st.button("Limpar Banco"):
-            st.session_state.mensagens = []; st.rerun()
+            st.session_state.mensagens = []
+            st.rerun()
