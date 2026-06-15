@@ -149,14 +149,13 @@ if 'mensagens' not in st.session_state:
         }
     ]
 
-# Nova trava de segurança: controla se o usuário atual já enviou uma mensagem nesta sessão
 if 'ja_enviou' not in st.session_state:
     st.session_state.ja_enviou = False
 
 # Título
 st.markdown("<h1>🔥 ENTREGA ELEGANTE 99Food</h1>", unsafe_allow_html=True)
 
-# --- BLOCO DE ENUNCIADO ATUALIZADO ---
+# --- BLOCO DE ENUNCIADO ---
 st.markdown("""
 <div class="enunciado-container">
     <div class="enunciado-titulo">🍿 🎏 Olha a Entrega Elegante! É verdade!</div>
@@ -174,7 +173,8 @@ aba_enviar, aba_mural = st.tabs(["💌 Enviar Mensagem", "📌 Mural de Entregas
 
 # --- ABA 1: ENVIAR MENSAGEM ---
 with aba_enviar:
-    st.markdown("<h3 style='color: #1A1A1A;'>Prepare seu pedido de agradecimento!</h3>", unsafe_allow_html=True)
+    # TEXTO ATUALIZADO COM O CORAÇÃO AMARELO
+    st.markdown("<h3 style='color: #1A1A1A;'>Prepare seu pedido de agradecimento! 💛</h3>", unsafe_allow_html=True)
     
     with st.form(key="form_correio", clear_on_submit=True):
         remetente = st.text_input("Seu Nome (Ficará escondido no mural para que a pessoa acerte que você enviou):").strip()
@@ -203,20 +203,16 @@ with aba_enviar:
                     "palpite_feito": False
                 }
                 st.session_state.mensagens.append(nova_msg)
-                
-                # Ativa a liberação do mural para este usuário
                 st.session_state.ja_enviou = True
-                
                 st.success("Mensagem enviada para a cozinha! Seu acesso ao mural foi liberado. 🛵💨")
                 st.rerun()
             else:
                 st.error("Por favor, preencha todos os campos antes de enviar.")
 
-# --- ABA 2: MURAL DE ENTREGAS (COM VALIDAÇÃO DE ACESSO) ---
+# --- ABA 2: MURAL DE ENTREGAS ---
 with aba_mural:
     st.markdown("<h3 style='color: #1A1A1A;'>👀 Quem recebeu um 'pedido' hoje?</h3>", unsafe_allow_html=True)
     
-    # Verifica se a pessoa já cumpriu o requisito de envio
     if not st.session_state.ja_enviou:
         st.warning("🔒 Ei, sô! Para conseguir ver o Mural e brincar de adivinhar, você precisa enviar um recadinho primeiro. Vá na aba 'Enviar Mensagem' e colabore com o time!")
     else:
