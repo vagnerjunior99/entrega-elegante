@@ -6,7 +6,7 @@ import unicodedata
 # Configuração da página
 st.set_page_config(page_title="Entrega Elegante 99Food", page_icon="🌽", layout="centered")
 
-# --- FUNÇÃO AUXILIAR PARA NORMALIZAR NOMES (IGNORA MAIÚSCULAS, MINÚSCULAS E ACENTOS) ---
+# --- FUNÇÃO AUXILIAR PARA NORMALIZAR NOMES ---
 def normalizar_nome(texto):
     if not texto:
         return ""
@@ -14,131 +14,159 @@ def normalizar_nome(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
-# --- INJEÇÃO DE IDENTIDADE VISUAL BLINDADA (BOTOES PRETOS + LETRAS AMARELAS) ---
+# --- NOVO VISUAL IMPERIAL: NOITE DE SÃO JOÃO 99 (GRAFITE, AMARELO E BANDEIRINHAS) ---
 st.markdown("""
     <style>
-    /* Cor de fundo geral da página */
+    /* Fundo Escuro Temático (Noite de São João) */
     .stApp {
-        background-color: #F8F9FA !important;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background: linear-gradient(180deg, #121212 0%, #1A1A1A 100%) !important;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
     
-    /* Força a cor preta em textos de labels, parágrafos e listas */
+    /* Força textos explicativos, labels e spans para Branco/Cinza Claro para dar leitura no fundo escuro */
     .stApp label, .stApp p, .stApp span, .stApp li {
-        color: #1A1A1A !important;
+        color: #E0E0E0 !important;
     }
     
-    /* Ajusta os campos de entrada de texto */
+    /* Estilização dos Inputs (Campos de Texto) - Branco com borda discreta */
     input, textarea {
         background-color: #FFFFFF !important;
         color: #1A1A1A !important;
-        border: 1px solid #CCCCCC !important;
+        border: 2px solid #333333 !important;
+        border-radius: 8px !important;
     }
-    
-    /* Garante visibilidade do placeholder */
     input::placeholder, textarea::placeholder {
         color: #888888 !important;
     }
     
-    /* Customização do Título Principal */
+    /* Título Principal Estilizado com Linha Amarela e Emojis */
     h1 {
-        color: #1A1A1A !important;
-        font-weight: 800 !important;
+        color: #FFCC00 !important;
+        font-weight: 900 !important;
         text-align: center;
-        border-bottom: 4px solid #FFCC00;
-        padding-bottom: 15px;
-        margin-bottom: 10px !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        margin-bottom: 5px !important;
+        padding-top: 10px;
     }
     
-    /* Bloco do Enunciado / Regras do Arraiá */
+    /* Divisor de Bandeirinhas Juninas */
+    .divisor-bandeirinhas {
+        text-align: center;
+        font-size: 1.4rem;
+        letter-spacing: 6px;
+        margin-bottom: 25px;
+        opacity: 0.9;
+    }
+    
+    /* Container do Enunciado / Regras do Arraiá */
     .enunciado-container {
-        background-color: #FFFFFF !important;
+        background-color: #222222 !important;
         border: 2px dashed #FFCC00 !important;
-        border-radius: 10px;
-        padding: 20px;
+        border-radius: 12px;
+        padding: 22px;
         margin-bottom: 30px;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.02);
+        box-shadow: 0px 6px 15px rgba(0,0,0,0.3);
     }
     .enunciado-titulo {
-        color: #E6B800 !important;
+        color: #FFCC00 !important;
         font-weight: bold !important;
-        font-size: 1.2rem !important;
-        margin-bottom: 10px;
+        font-size: 1.25rem !important;
+        margin-bottom: 12px;
     }
     
-    /* Abas estilizadas no padrão da marca */
+    /* Abas Estilizadas (Padrão de App Moderno) */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-        background-color: #1A1A1A !important;
-        padding: 8px;
-        border-radius: 10px;
+        gap: 12px;
+        background-color: #222222 !important;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: inset 0px 2px 5px rgba(0,0,0,0.5);
     }
     .stTabs [data-baseweb="tab"] {
         background-color: transparent !important;
-        border-radius: 5px;
-        padding: 10px 20px;
+        border-radius: 8px;
+        padding: 12px 24px;
+        transition: all 0.3s ease;
     }
     .stTabs [data-baseweb="tab"] p {
-        color: #FFFFFF !important;
+        color: #AAAAAA !important;
+        font-weight: 600 !important;
     }
     .stTabs [aria-selected="true"] {
         background-color: #FFCC00 !important;
     }
     .stTabs [aria-selected="true"] p {
         color: #1A1A1A !important;
+        font-weight: bold !important;
     }
 
-    /* --- ALVO GLOBAL EM TODOS OS BOTÕES DA PÁGINA --- */
+    /* Botões Oficiais 99 (Preto Intenso com borda e texto Amarelo Vibrante) */
     button[data-testid="stBaseButton-secondaryFormSubmit"], 
     button[data-testid="stBaseButton-secondary"],
     .stButton > button {
-        background-color: #1A1A1A !important;
+        background-color: #000000 !important;
         border: 2px solid #FFCC00 !important;
-        border-radius: 8px !important;
-        padding: 10px 24px !important;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15) !important;
+        border-radius: 10px !important;
+        padding: 12px 24px !important;
+        box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.4) !important;
         width: 100% !important;
+        transition: all 0.2s ease-in-out !important;
     }
-    
-    /* Força a cor amarela no texto interno de QUALQUER botão */
     button[data-testid="stBaseButton-secondaryFormSubmit"] p,
     button[data-testid="stBaseButton-secondary"] p,
     .stButton > button p {
         color: #FFCC00 !important;
-        font-weight: bold !important;
+        font-weight: 800 !important;
+        font-size: 1rem !important;
     }
-    
-    /* Efeito Hover global */
     button[data-testid="stBaseButton-secondaryFormSubmit"]:hover,
     button[data-testid="stBaseButton-secondary"]:hover,
     .stButton > button:hover {
-        background-color: #262626 !important;
-        border-color: #E6B800 !important;
+        background-color: #FFCC00 !important;
+        border-color: #FFFFFF !important;
+        transform: translateY(-2px);
+    }
+    button[data-testid="stBaseButton-secondaryFormSubmit"]:hover p,
+    button[data-testid="stBaseButton-secondary"]:hover p,
+    .stButton > button:hover p {
+        color: #000000 !important;
     }
     
-    /* Caixa de Mensagem / Card do Mural */
+    /* Cards do Mural Estilizados como Balões Juninos Flutuantes */
     .delivery-card {
         background-color: #FFFFFF !important;
         border-left: 8px solid #FFCC00 !important;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
         margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+    .delivery-card:hover {
+        transform: scale(1.01);
     }
     .delivery-header {
-        font-size: 1.1rem !important;
-        font-weight: bold !important;
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
         color: #1A1A1A !important;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
     .delivery-text {
-        font-size: 1rem !important;
+        font-size: 1.05rem !important;
         font-style: italic !important;
-        color: #4A4A4A !important;
-        background-color: #F8F9FA !important;
-        padding: 12px;
-        border-radius: 8px;
+        color: #2D2D2D !important;
+        background-color: #F3F4F6 !important;
+        padding: 14px;
+        border-radius: 10px;
+        border-left: 3px solid #E5E7EB;
         margin-bottom: 15px;
+    }
+    
+    /* Ajustes extras para sub-títulos no modo escuro */
+    h3 {
+        color: #FFCC00 !important;
+        font-weight: 700 !important;
+        margin-top: 15px !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -162,18 +190,19 @@ if 'mensagens' not in st.session_state:
 if 'ja_enviou' not in st.session_state:
     st.session_state.ja_enviou = False
 
-# Título
-st.markdown("<h1>🔥 ENTREGA ELEGANTE 99Food</h1>", unsafe_allow_html=True)
+# Título Principal e Varal de Bandeirinhas
+st.markdown("<h1>🔥 ARRAIÁ 99Food</h1>", unsafe_allow_html=True)
+st.markdown('<div class="divisor-bandeirinhas">🎏🍿🌽🔥🌽🍿🎏</div>', unsafe_allow_html=True)
 
 # --- BLOCO DE ENUNCIADO ---
 st.markdown("""
 <div class="enunciado-container">
     <div class="enunciado-titulo">🍿 🎏 Olha a Entrega Elegante! É verdade!</div>
-    <p style="margin-bottom: 8px;">O São João chegou na 99Food! Para celebrar, misturamos a tradição do <strong>Correio Elegante Junino</strong> com a agilidade da <strong>99Food</strong> em um arraiá de reconhecimento corporativo. Veja como participar:</p>
+    <p style="margin-bottom: 8px;">O São João chegou na 99Food! Para celebrar, misturamos a tradição do <strong>Correio Elegante Junino</strong> com a identidade da <strong>99</strong> em um ambiente de reconhecimento corporativo. Veja como participar:</p>
     <ul style="margin-top: 0; padding-left: 20px;">
-        <li><strong>Enviar um Recadinho:</strong> Pule para a aba <em>"Enviar Mensagem"</em>, coloque o nome do colega e complete a frase lembrando de um momento em que essa pessoa foi uma verdadeira parceira e "salvou o seu dia" na empresa. O envio é 100% anônimo!</li>
-        <li><strong>Adivinhar no Mural:</strong> Na aba <em>"Mural de Entregas"</em>, ficam expostos todos os balões e mensagens do nosso time. Se achar um recado para você, clareie a mente e tente adivinhar o remetente. <strong>Cuidado:</strong> você só tem <u>uma única chance</u> para dar o seu palpite!</li>
-        <li>⚠️ <strong>Regra do Arraiá:</strong> O mural de entregas é exclusivo para quem também espalhou carinho! Você só conseguirá visualizar os recados e dar seus palpites após enviar pelo menos uma mensagem para um colega nesta sessão.</li>
+        <li><strong>Enviar um Recadinho:</strong> Na aba <em>"Enviar Mensagem"</em>, coloque o nome do colega e conte um momento em que essa pessoa foi parceira e "salvou o seu dia". O envio é anônimo!</li>
+        <li><strong>Adivinhar no Mural:</strong> Na aba <em>"Mural de Entregas"</em>, ficam expostos os recados. Se achar um para você, tente adivinhar quem mandou. <strong>Cuidado:</strong> você só tem <u>uma única chance</u>!</li>
+        <li>⚠️ <strong>Regra do Arraiá:</strong> O mural é exclusivo para quem espalhou carinho. Você só verá as mensagens após enviar pelo menos uma entrega elegante nesta sessão.</li>
     </ul>
 </div>
 """, unsafe_allow_html=True)
@@ -183,16 +212,16 @@ aba_enviar, aba_mural = st.tabs(["💌 Enviar Mensagem", "📌 Mural de Entregas
 
 # --- ABA 1: ENVIAR MENSAGEM ---
 with aba_enviar:
-    st.markdown("<h3 style='color: #1A1A1A;'>Prepare seu pedido de agradecimento! 💛</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>Prepare seu pedido de agradecimento! 💛</h3>", unsafe_allow_html=True)
     
     with st.form(key="form_correio", clear_on_submit=True):
-        remetente = st.text_input("Seu Nome (Ficará escondido no mural para que a pessoa acerte que você enviou):").strip()
+        remetente = st.text_input("Seu Nome (Ficará escondido no mural para o jogo de adivinhação):").strip()
         destinatario = st.text_input("Para quem é a mensagem? (Nome do Colega):").strip()
         
-        st.markdown("**Complete a frase com uma lembrança:**")
+        st.markdown("<p style='font-weight: bold; margin-bottom: 2px; color:#FFCC00 !important;'>Complete a frase com uma lembrança:</p>", unsafe_allow_html=True)
         texto_base = "Você não é um cupom do 99Food, mas quero te dizer/lembrar que..."
         
-        exemplo_emotivo = "Ex: você me deu a maior força quando aquele projeto deu errado e não me deixou desistir. Obrigado por ser essa liderança/parceira incrível, você salva meu dia sempre!"
+        exemplo_emotivo = "Ex: você me deu a maior força quando aquele projeto deu errado. Obrigado por ser essa parceira incrível!"
         lembranca = st.text_area(texto_base, placeholder=exemplo_emotivo)
         
         botao_enviar = st.form_submit_button("Enviar Entrega Elegante 🚀")
@@ -205,7 +234,7 @@ with aba_enviar:
                     "id": novo_id,
                     "remetente": remetente,
                     "destinatario": destinatario,
-                    "mensagem": mensagem_completa,
+                    "mensagem": message_completa if 'message_completa' in locals() else mensagem_completa,
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
                     "quem_palpitou": "",
                     "palpite": "",
@@ -221,7 +250,7 @@ with aba_enviar:
 
 # --- ABA 2: MURAL DE ENTREGAS ---
 with aba_mural:
-    st.markdown("<h3 style='color: #1A1A1A;'>👀 Quem recebeu um 'pedido' hoje?</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>👀 Quem recebeu uma entrega hoje?</h3>", unsafe_allow_html=True)
     
     if not st.session_state.ja_enviou:
         st.warning("🔒 Ei, sô! Para conseguir ver o Mural e brincar de adivinhar, você precisa enviar um recadinho primeiro. Vá na aba 'Enviar Mensagem' e colabore com o time!")
@@ -236,15 +265,15 @@ with aba_mural:
                 <div class="delivery-card">
                     <div class="delivery-header">💛 Para: {msg['destinatario']}</div>
                     <div class="delivery-text">"{msg['mensagem']}"</div>
-                    <div style="font-size: 0.8rem; color: #888;">Status: Entregue com sucesso • {msg['data']}</div>
+                    <div style="font-size: 0.8rem; color: #777;">Status: Entregue com sucesso • {msg['data']}</div>
                 </div>
                 """
                 st.markdown(card_html, unsafe_allow_html=True)
                 
-                # TRAVA TOTAL: O formulário de entrada só existe se nenhum palpite tiver sido feito
+                # Se nenhum palpite foi feito, exibe o form de chute
                 if not msg["palpite_feito"]:
                     with st.form(key=f"form_palpite_{orig_id}"):
-                        st.markdown("<p style='font-weight: bold; margin-bottom: 2px;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
+                        st.markdown("<p style='font-weight: bold; margin-bottom: 2px; color: #FFCC00 !important;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
                         
                         identificacao = st.text_input("Seu Nome (Quem está adivinhando):", key=f"id_{orig_id}", placeholder="Digite seu nome para validar...").strip()
                         chute = st.text_input("Quem você acha que enviou?", key=f"chute_{orig_id}", placeholder="Nome do colega do chute...").strip()
@@ -256,7 +285,6 @@ with aba_mural:
                                 id_limpo = normalizar_nome(identificacao)
                                 dest_limpo = normalizar_nome(msg["destinatario"])
                                 
-                                # Verifica se quem está tentando chutar é realmente o dono do card
                                 if id_limpo in dest_limpo or dest_limpo in id_limpo:
                                     remetente_limpo = normalizar_nome(msg["remetente"])
                                     chute_limpo = normalizar_nome(chute)
@@ -274,12 +302,12 @@ with aba_mural:
                                     st.warning(f"✋ Ei, sô! Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊")
                             else:
                                 st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
-                # SE O PALPITE JÁ FOI ENVIADO, O FORMULÁRIO ACIMA DESAPARECE E SÓ EXIBE O RESULTADO
+                # Se o palpite já foi feito, some com o form e mostra o resultado
                 else:
                     if msg["acertou"]:
                         st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse recado especial!")
                     else:
-                        st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem te enviou esse recado na verdade foi o(a) **{msg['remetente']}**!")
+                        st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem assinou esse recado especial na verdade foi o(a) **{msg['remetente']}**!")
                 
                 st.markdown("<br>", unsafe_allow_html=True)
 
