@@ -1,9 +1,20 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import unicodedata
 
 # Configuração da página
 st.set_page_config(page_title="Entrega Elegante 99Food", page_icon="🌽", layout="centered")
+
+# --- FUNÇÃO AUXILIAR PARA NORMALIZAR NOMES (IGNORA MAIÚSCULAS, MINÚSCULAS E ACENTOS) ---
+def normalizar_nome(texto):
+    if not texto:
+        return ""
+    # Transforma em minúsculas e remove espaços inúteis nas pontas
+    texto = str(texto).lower().strip()
+    # Remove acentos (Ex: "João" vira "joao")
+    texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
+    return texto
 
 # --- INJEÇÃO DE IDENTIDADE VISUAL BLINDADA (BOTOES PRETOS + LETRAS AMARELAS) ---
 st.markdown("""
@@ -139,13 +150,14 @@ if 'mensagens' not in st.session_state:
     st.session_state.mensagens = [
         {
             "id": 0,
-            "remetente": "Carlos (RH)",
+            "remetente": "Carlos",
             "destinatario": "Mariana (TI)",
             "mensagem": "Você não é um cupom do 99Food, mas quero te dizer/lembrar que... você salvou o meu dia quando resolveu o problema do meu acesso logo cedo!",
             "data": "15/06/2026",
             "quem_palpitou": "",
             "palpite": "",
-            "palpite_feito": False
+            "palpite_feito": False,
+            "acertou": False
         }
     ]
 
@@ -173,7 +185,6 @@ aba_enviar, aba_mural = st.tabs(["💌 Enviar Mensagem", "📌 Mural de Entregas
 
 # --- ABA 1: ENVIAR MENSAGEM ---
 with aba_enviar:
-    # TEXTO ATUALIZADO COM O CORAÇÃO AMARELO
     st.markdown("<h3 style='color: #1A1A1A;'>Prepare seu pedido de agradecimento! 💛</h3>", unsafe_allow_html=True)
     
     with st.form(key="form_correio", clear_on_submit=True):
@@ -200,7 +211,8 @@ with aba_enviar:
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
                     "quem_palpitou": "",
                     "palpite": "",
-                    "palpite_feito": False
+                    "palpite_feito": False,
+                    "acertou": False
                 }
                 st.session_state.mensagens.append(nova_msg)
                 st.session_state.ja_enviou = True
@@ -231,6 +243,7 @@ with aba_mural:
                 """
                 st.markdown(card_html, unsafe_allow_html=True)
                 
+                # SE O CARD NÃO TIVER PALPITE, EXIBE O FORMULÁRIO DE CHUTE
                 if not msg["palpite_feito"]:
                     with st.form(key=f"form_palpite_{orig_id}"):
                         st.markdown("<p style='font-weight: bold; margin-bottom: 2px;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
@@ -242,17 +255,28 @@ with aba_mural:
                         
                         if botao_palpite:
                             if identificacao and chute:
+                                # Processamento com limpeza inteligente de acentos/caixa
+                                remetente_limpo = normalizar_nome(msg["remetente"])
+                                chute_limpo = normalizar_nome(chute)
+                                
+                                acertou_palpite = chute_limpo in remetente_limpo or remetente_limpo in chute_limpo
+                                
                                 for m in st.session_state.mensagens:
                                     if m["id"] == orig_id:
                                         m["quem_palpitou"] = identificacao
                                         m["palpite"] = chute
                                         m["palpite_feito"] = True
-                                st.success(f"Palpite de {identificacao} registrado!")
+                                        m["acertou"] = acertou_palpite
+                                        
                                 st.rerun()
                             else:
                                 st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
+                # SE JÁ FOI PALPITADO, MOSTRA O RESULTADO IMEDIATAMENTE NA TELA
                 else:
-                    st.markdown(f"<p style='color: #2E7D32; font-weight: bold; margin-top: -10px; margin-bottom: 20px;'>🔒 Palpite já enviado por '{msg['quem_palpitou']}'. O palpite foi '{msg['palpite']}'.</p>", unsafe_allow_html=True)
+                    if msg["acertou"]:
+                        st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse pedido especial!")
+                    else:
+                        st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem te enviou esse pedido na verdade foi o(a) **{msg['remetente']}**!")
                 
                 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -260,7 +284,7 @@ with aba_mural:
 query_params = st.query_params
 if query_params.get("adm") == "true":
     st.markdown("---")
-    st.markdown("### 🛠️ Área do Administrador (Modo Secreto Ativo)")
+    st.markdown("### 🛠️ Área do Administrator (Modo Secreto Ativo)")
     
     senha_adm = st.text_input("Insira a chave master para acessar o banco de dados:", type="password")
     
@@ -270,10 +294,8 @@ if query_params.get("adm") == "true":
         if len(st.session_state.mensagens) > 0:
             df = pd.DataFrame(st.session_state.mensagens)
             
-            df['Acertou?'] = df.apply(
-                lambda r: "Sim" if r['palpite'].lower() in r['remetente'].lower() and r['palpite'] != "" else ("Não" if r['palpite_feito'] else "Não palpitou ainda"), 
-                axis=1
-            )
+            # Ajusta a exibição da coluna de acertos no dataframe administrativo
+            df['Acertou?'] = df['acertou'].apply(lambda x: "Sim" if x else "Não")
             
             df_relatorio = df[["data", "destinatario", "mensagem", "remetente", "quem_palpitou", "palpite", "Acertou?"]]
             df_relatorio.columns = ["Data/Hora", "Quem Recebeu", "Mensagem", "Remetente Real (Anônimo)", "Quem Deu o Palpite", "Palpite Feito (Chute)", "Acertou o Palpite?"]
