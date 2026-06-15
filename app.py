@@ -143,7 +143,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Inicializa o banco de dados de maneira segura e fixa
+# Inicializa o banco de dados de maneira segura
 if 'mensagens' not in st.session_state:
     st.session_state.mensagens = [
         {
@@ -241,6 +241,7 @@ with aba_mural:
                 """
                 st.markdown(card_html, unsafe_allow_html=True)
                 
+                # TRAVA TOTAL: O formulário de entrada só existe se nenhum palpite tiver sido feito
                 if not msg["palpite_feito"]:
                     with st.form(key=f"form_palpite_{orig_id}"):
                         st.markdown("<p style='font-weight: bold; margin-bottom: 2px;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
@@ -255,6 +256,7 @@ with aba_mural:
                                 id_limpo = normalizar_nome(identificacao)
                                 dest_limpo = normalizar_nome(msg["destinatario"])
                                 
+                                # Verifica se quem está tentando chutar é realmente o dono do card
                                 if id_limpo in dest_limpo or dest_limpo in id_limpo:
                                     remetente_limpo = normalizar_nome(msg["remetente"])
                                     chute_limpo = normalizar_nome(chute)
@@ -272,11 +274,12 @@ with aba_mural:
                                     st.warning(f"✋ Ei, sô! Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊")
                             else:
                                 st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
+                # SE O PALPITE JÁ FOI ENVIADO, O FORMULÁRIO ACIMA DESAPARECE E SÓ EXIBE O RESULTADO
                 else:
                     if msg["acertou"]:
                         st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse recado especial!")
                     else:
-                        st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem te enviou esse pedido na verdade foi o(a) **{msg['remetente']}**!")
+                        st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem te enviou esse recado na verdade foi o(a) **{msg['remetente']}**!")
                 
                 st.markdown("<br>", unsafe_allow_html=True)
 
@@ -291,7 +294,6 @@ if query_params.get("adm") == "true":
     if senha_adm == "99food2026":
         st.success("Autenticação efetuada com sucesso!")
         
-        # Botão de Reset manual realocado de forma estável dentro do painel administrativo autenticado
         if st.button("🧹 Zerar Banco de Dados e Manter Apenas Teste"):
             st.session_state.mensagens = [
                 {
