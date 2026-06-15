@@ -10,10 +10,7 @@ st.set_page_config(page_title="Entrega Elegante 99Food", page_icon="🌽", layou
 def normalizar_nome(texto):
     if not texto:
         return ""
-    # Transforma em minúsculas e remove espaços inúteis nas pontas
     texto = str(texto).lower().strip()
-    # Remove acentos (Ex: "Mariana (TI)" ou "Mariana" viram "mariana")
-    # Nota: Vamos extrair apenas as primeiras letras/palavras para facilitar a checagem se o nome bate
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
@@ -146,8 +143,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Inicializa as variáveis da sessão e limpa os dados antigos, deixando apenas o modelo inicial
-if 'mensagens' not in st.session_state or st.button("Zerar Mural (Apenas Admin)", key="reset_manual", help="Botão invisível/oculto de suporte", label_visibility="collapsed"):
+# Inicializa o banco de dados de maneira segura e fixa
+if 'mensagens' not in st.session_state:
     st.session_state.mensagens = [
         {
             "id": 0,
@@ -244,7 +241,6 @@ with aba_mural:
                 """
                 st.markdown(card_html, unsafe_allow_html=True)
                 
-                # SE O CARD NÃO TIVER PALPITE, EXIBE O FORMULÁRIO DE CHUTE
                 if not msg["palpite_feito"]:
                     with st.form(key=f"form_palpite_{orig_id}"):
                         st.markdown("<p style='font-weight: bold; margin-bottom: 2px;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
@@ -256,11 +252,9 @@ with aba_mural:
                         
                         if botao_palpite:
                             if identificacao and chute:
-                                # Normaliza os nomes para fazer a checagem da trava de segurança (Opção B)
                                 id_limpo = normalizar_nome(identificacao)
                                 dest_limpo = normalizar_nome(msg["destinatario"])
                                 
-                                # TRAVA DE SEGURANÇA: Só aceita se o nome de quem chuta fizer parte do destinatário do card
                                 if id_limpo in dest_limpo or dest_limpo in id_limpo:
                                     remetente_limpo = normalizar_nome(msg["remetente"])
                                     chute_limpo = normalizar_nome(chute)
@@ -275,21 +269,18 @@ with aba_mural:
                                             m["acertou"] = acertou_palpite
                                     st.rerun()
                                 else:
-                                    # Mensagem personalizada solicitada pelo usuário para bloquear bisbilhoteiros
                                     st.warning(f"✋ Ei, sô! Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊")
                             else:
                                 st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
-                # SE JÁ FOI PALPITADO, MOSTRA O RESULTADO IMEDIATAMENTE NA TELA
                 else:
                     if msg["acertou"]:
-                        # Texto atualizado para "recado especial!"
                         st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse recado especial!")
                     else:
                         st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem te enviou esse pedido na verdade foi o(a) **{msg['remetente']}**!")
                 
                 st.markdown("<br>", unsafe_allow_html=True)
 
-# --- ÁREA DO ADMINISTRADOR: DUPLA CAMADA (URL SECRETA + SENHA) ---
+# --- ÁREA DO ADMINISTRADOR ---
 query_params = st.query_params
 if query_params.get("adm") == "true":
     st.markdown("---")
@@ -300,9 +291,26 @@ if query_params.get("adm") == "true":
     if senha_adm == "99food2026":
         st.success("Autenticação efetuada com sucesso!")
         
+        # Botão de Reset manual realocado de forma estável dentro do painel administrativo autenticado
+        if st.button("🧹 Zerar Banco de Dados e Manter Apenas Teste"):
+            st.session_state.mensagens = [
+                {
+                    "id": 0,
+                    "remetente": "Carlos",
+                    "destinatario": "Mariana (TI)",
+                    "mensagem": "Você não é um cupom do 99Food, mas quero te dizer/lembrar que... você salvou o meu dia quando resolveu o problema do meu acesso logo cedo!",
+                    "data": "15/06/2026",
+                    "quem_palpitou": "",
+                    "palpite": "",
+                    "palpite_feito": False,
+                    "acertou": False
+                }
+            ]
+            st.success("Mural resetado com sucesso!")
+            st.rerun()
+        
         if len(st.session_state.mensagens) > 0:
             df = pd.DataFrame(st.session_state.mensagens)
-            
             df['Acertou?'] = df['acertou'].apply(lambda x: "Sim" if x else "Não")
             
             df_relatorio = df[["data", "destinatario", "mensagem", "remetente", "quem_palpitou", "palpite", "Acertou?"]]
@@ -311,7 +319,6 @@ if query_params.get("adm") == "true":
             st.dataframe(df_relatorio)
             
             csv = df_relatorio.to_csv(index=False).encode('utf-8-sig')
-            
             st.download_button(
                 label="📥 Baixar Planilha de Acertos (Excel/CSV)",
                 data=csv,
