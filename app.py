@@ -14,7 +14,7 @@ def normalizar_nome(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
-# --- VISUAL: ARRAIÁ 99 CORRIGIDO ---
+# --- VISUAL: ARRAIÁ 99 CONSOLIDADO ---
 st.markdown("""
     <style>
     /* Fundo Amarelo Oficial da 99 */
@@ -50,21 +50,15 @@ st.markdown("""
         margin-bottom: 30px;
     }
     
-    /* Estilização do Título Interno em Amarelo */
-    .header-title {
-        color: #FFCC00 !important;
-        font-weight: 900 !important;
+    /* Força o espaçamento do título dentro do bloco */
+    .header-box h1 {
+        margin: 0 !important;
         font-size: 2.3rem !important;
-        margin-top: 15px !important;
-        margin-bottom: 10px !important;
     }
-    
-    /* Estilização do Divisor de Bandeirinhas Interno */
-    .header-divisor {
+    .header-box .divisor-bandeirinhas {
         font-size: 1.5rem;
         letter-spacing: 8px;
-        color: #FFFFFF !important;
-        margin-top: 5px;
+        margin-top: 10px;
     }
     
     /* --- CONFIGURAÇÃO DAS ABAS (CENTRALIZADAS E MAIORES) --- */
@@ -171,6 +165,21 @@ st.markdown("""
         border-left: 3px solid #FFCC00;
     }
     
+    /* --- RETÂNGULO BRANCO PARA RESULTADO DE PALPITES --- */
+    .resultado-palpite-box {
+        background-color: #FFFFFF !important;
+        border: 2px solid #1A1A1A !important;
+        border-radius: 12px;
+        padding: 18px;
+        margin-top: 10px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+    }
+    .resultado-palpite-box p {
+        color: #1A1A1A !important;
+        margin: 0 !important;
+        font-size: 1.05rem !important;
+    }
+    
     .centered-title {
         text-align: center !important;
         color: #1A1A1A !important;
@@ -200,16 +209,15 @@ if 'ja_enviou' not in st.session_state:
     st.session_state.ja_enviou = False
 
 # --- CABEÇALHO UNIFICADO COMPLETO EM HTML PURO ---
-# Isso garante que o logo, o título amarelo e as bandeirinhas fiquem todos travados dentro do bloco preto.
 st.markdown("""
 <div class="header-box">
     <img src="https://99app.com/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fx9sul3ikm35w%2F2kYcs2M15uM3cYchuoDRvG%2Ffd6069a06d44476d143559243510a929%2Fimage.png&w=384&q=75" width="95" style="display: block; margin: 0 auto;">
-    <div class="header-title">🔥 ARRAIÁ 99Food</div>
-    <div class="header-divisor">🎏🍿🌽🔥🌽🍿🎏</div>
+    <div class="header-title" style="color: #FFCC00 !important; font-weight: 900 !important; font-size: 2.3rem !important; margin-top: 15px; margin-bottom: 10px;">🔥 ARRAIÁ 99Food</div>
+    <div class="header-divisor" style="color: #FFFFFF !important; font-size: 1.5rem; letter-spacing: 8px; margin-top: 5px;">🎏🍿🌽🔥🌽🍿🎏</div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- REGRAS COMPLETAS RECUPERADAS ---
+# --- REGRAS COMPLETAS ---
 st.markdown("""
 <div class="enunciado-container">
     <div style="font-weight:bold; font-size:1.25rem; color: #1A1A1A; margin-bottom: 12px;">🍿 🎏 Olha a Entrega Elegante! É verdade!</div>
@@ -248,7 +256,7 @@ with aba_enviar:
                     "id": novo_id,
                     "remetente": remetente,
                     "destinatario": destinatario,
-                    "mensagem": message_completa if 'message_completa' in locals() else mensagem_completa,
+                    "mensagem": mensagem_completa,
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
                     "quem_palpitou": "",
                     "palpite": "",
@@ -287,6 +295,7 @@ with aba_mural:
                 </div>
                 """, unsafe_allow_html=True)
                 
+                # Se o palpite NÃO foi feito, exibe o formulário de chute
                 if not msg["palpite_feito"]:
                     with st.form(key=f"form_palpite_{orig_id}"):
                         st.markdown("<p style='font-weight: bold; color: #1A1A1A !important;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
@@ -307,11 +316,22 @@ with aba_mural:
                                     st.warning(f"✋ Ei, sô! Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊")
                             else:
                                 st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
+                
+                # SE O PALPITE JÁ FOI FEITO: Exibe os resultados em retângulos brancos limpos
                 else:
                     if msg["acertou"]:
-                        st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse recado especial!")
+                        st.markdown(f"""
+                        <div class="resultado-palpite-box" style="border-left: 6px solid #28a745 !important;">
+                            <p>🎉 <b>{msg['quem_palpitou']}, você acertou em cheio!</b> Foi o(a) <b>{msg['remetente']}</b> que te enviou esse recado especial!</p>
+                        </div>
+                        """, unsafe_allow_html=True)
                     else:
-                        st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem assinou na verdade foi o(a) **{msg['remetente']}**!")
+                        # CORREÇÃO: Revela abertamente o remetente real no caso de erro!
+                        st.markdown(f"""
+                        <div class="resultado-palpite-box" style="border-left: 6px solid #dc3545 !important;">
+                            <p>❌ <b>Não foi dessa vez, {msg['quem_palpitou']}!</b> Você chutou '{msg['palpite']}', mas quem assinou esse recado especial na verdade foi o(a) <b>{msg['remetente']}</b>!</p>
+                        </div>
+                        """, unsafe_allow_html=True)
 
 # --- ÁREA DO ADMINISTRADOR ---
 if st.query_params.get("adm") == "true":
