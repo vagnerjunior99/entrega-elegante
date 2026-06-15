@@ -14,39 +14,46 @@ def normalizar_nome(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
-# --- NOVO VISUAL IMPERIAL: NOITE DE SÃO JOÃO 99 (GRAFITE, AMARELO E BANDEIRINHAS) ---
+# --- NOVO VISUAL: FUNDO AMARELO 99 COM BLOCOS PRETO FOSCO ---
 st.markdown("""
     <style>
-    /* Fundo Escuro Temático (Noite de São João) */
+    /* Fundo Amarelo Vibrante Oficial da 99 */
     .stApp {
-        background: linear-gradient(180deg, #121212 0%, #1A1A1A 100%) !important;
+        background: #FFCC00 !important;
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
     
-    /* Força textos explicativos, labels e spans para Branco/Cinza Claro para dar leitura no fundo escuro */
+    /* Força os textos gerais da página (fora dos cards) a ficarem pretos para dar leitura no fundo amarelo */
     .stApp label, .stApp p, .stApp span, .stApp li {
-        color: #E0E0E0 !important;
+        color: #1A1A1A !important;
     }
     
-    /* Estilização dos Inputs (Campos de Texto) - Branco com borda discreta */
+    /* Estilização dos Inputs (Campos de Texto) - Branco para contraste de digitação */
     input, textarea {
         background-color: #FFFFFF !important;
         color: #1A1A1A !important;
-        border: 2px solid #333333 !important;
+        border: 2px solid #1A1A1A !important;
         border-radius: 8px !important;
     }
     input::placeholder, textarea::placeholder {
-        color: #888888 !important;
+        color: #777777 !important;
     }
     
-    /* Título Principal Estilizado com Linha Amarela e Emojis */
+    /* Centraliza e estiliza o container do Logo no topo */
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 15px;
+        margin-bottom: -10px;
+    }
+    
+    /* Título Principal em Preto Intenso */
     h1 {
-        color: #FFCC00 !important;
+        color: #1A1A1A !important;
         font-weight: 900 !important;
         text-align: center;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
         margin-bottom: 5px !important;
-        padding-top: 10px;
     }
     
     /* Divisor de Bandeirinhas Juninas */
@@ -55,43 +62,43 @@ st.markdown("""
         font-size: 1.4rem;
         letter-spacing: 6px;
         margin-bottom: 25px;
-        opacity: 0.9;
+        opacity: 0.95;
     }
     
-    /* Container do Enunciado / Regras do Arraiá */
+    /* Container do Enunciado / Regras do Arraiá (Fundo Branco para quebrar o amarelo excessivo) */
     .enunciado-container {
-        background-color: #222222 !important;
-        border: 2px dashed #FFCC00 !important;
+        background-color: #FFFFFF !important;
+        border: 2px dashed #1A1A1A !important;
         border-radius: 12px;
         padding: 22px;
         margin-bottom: 30px;
-        box-shadow: 0px 6px 15px rgba(0,0,0,0.3);
+        box-shadow: 0px 6px 15px rgba(0,0,0,0.1);
     }
     .enunciado-titulo {
-        color: #FFCC00 !important;
+        color: #000000 !important;
         font-weight: bold !important;
         font-size: 1.25rem !important;
         margin-bottom: 12px;
     }
     
-    /* Abas Estilizadas (Padrão de App Moderno) */
+    /* Abas Estilizadas em Preto com Destaque Amarelo */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
-        background-color: #222222 !important;
+        background-color: #1A1A1A !important;
         padding: 10px;
         border-radius: 12px;
-        box-shadow: inset 0px 2px 5px rgba(0,0,0,0.5);
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
     }
     .stTabs [data-baseweb="tab"] {
         background-color: transparent !important;
         border-radius: 8px;
         padding: 12px 24px;
-        transition: all 0.3s ease;
     }
     .stTabs [data-baseweb="tab"] p {
-        color: #AAAAAA !important;
+        color: #FFFFFF !important;
         font-weight: 600 !important;
     }
+    /* Aba Ativa ganha fundo amarelo e texto preto */
     .stTabs [aria-selected="true"] {
         background-color: #FFCC00 !important;
     }
@@ -100,15 +107,15 @@ st.markdown("""
         font-weight: bold !important;
     }
 
-    /* Botões Oficiais 99 (Preto Intenso com borda e texto Amarelo Vibrante) */
+    /* Botões Oficiais 99 (Preto com Borda Branca e texto Amarelo) */
     button[data-testid="stBaseButton-secondaryFormSubmit"], 
     button[data-testid="stBaseButton-secondary"],
     .stButton > button {
-        background-color: #000000 !important;
-        border: 2px solid #FFCC00 !important;
+        background-color: #1A1A1A !important;
+        border: 2px solid #FFFFFF !important;
         border-radius: 10px !important;
         padding: 12px 24px !important;
-        box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.2) !important;
         width: 100% !important;
         transition: all 0.2s ease-in-out !important;
     }
@@ -122,49 +129,41 @@ st.markdown("""
     button[data-testid="stBaseButton-secondaryFormSubmit"]:hover,
     button[data-testid="stBaseButton-secondary"]:hover,
     .stButton > button:hover {
-        background-color: #FFCC00 !important;
-        border-color: #FFFFFF !important;
+        background-color: #000000 !important;
+        border-color: #FFCC00 !important;
         transform: translateY(-2px);
     }
-    button[data-testid="stBaseButton-secondaryFormSubmit"]:hover p,
-    button[data-testid="stBaseButton-secondary"]:hover p,
-    .stButton > button:hover p {
-        color: #000000 !important;
-    }
     
-    /* Cards do Mural Estilizados como Balões Juninos Flutuantes */
+    /* Cards do Mural em Preto Fosco */
     .delivery-card {
-        background-color: #FFFFFF !important;
-        border-left: 8px solid #FFCC00 !important;
+        background-color: #1A1A1A !important;
+        border-left: 8px solid #FFFFFF !important;
         border-radius: 16px;
         padding: 24px;
-        box-shadow: 0px 8px 20px rgba(0,0,0,0.4);
+        box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
         margin-bottom: 20px;
-        transition: transform 0.3s ease;
     }
-    .delivery-card:hover {
-        transform: scale(1.01);
-    }
-    .delivery-header {
+    /* Força os textos de dentro do CARD PRETO a ficarem brancos/amarelos para ter leitura */
+    .delivery-card .delivery-header {
         font-size: 1.15rem !important;
         font-weight: 800 !important;
-        color: #1A1A1A !important;
+        color: #FFCC00 !important;
         margin-bottom: 12px;
     }
-    .delivery-text {
+    .delivery-card .delivery-text {
         font-size: 1.05rem !important;
         font-style: italic !important;
-        color: #2D2D2D !important;
-        background-color: #F3F4F6 !important;
+        color: #FFFFFF !important;
+        background-color: #2D2D2D !important;
         padding: 14px;
         border-radius: 10px;
-        border-left: 3px solid #E5E7EB;
+        border-left: 3px solid #FFCC00;
         margin-bottom: 15px;
     }
     
-    /* Ajustes extras para sub-títulos no modo escuro */
+    /* Ajustes extras para sub-títulos em preto na área amarela */
     h3 {
-        color: #FFCC00 !important;
+        color: #1A1A1A !important;
         font-weight: 700 !important;
         margin-top: 15px !important;
     }
@@ -189,6 +188,11 @@ if 'mensagens' not in st.session_state:
 
 if 'ja_enviou' not in st.session_state:
     st.session_state.ja_enviou = False
+
+# --- LOGOTIPO OFICIAL DA 99 INTEGRADO NO TOPO ---
+st.markdown('<div class="logo-container">', unsafe_allow_html=True)
+st.image("https://99app.com/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fx9sul3ikm35w%2F2kYcs2M15uM3cYchuoDRvG%2Ffd6069a06d44476d143559243510a929%2Fimage.png&w=384&q=75", width=90)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Título Principal e Varal de Bandeirinhas
 st.markdown("<h1>🔥 ARRAIÁ 99Food</h1>", unsafe_allow_html=True)
@@ -218,7 +222,7 @@ with aba_enviar:
         remetente = st.text_input("Seu Nome (Ficará escondido no mural para o jogo de adivinhação):").strip()
         destinatario = st.text_input("Para quem é a mensagem? (Nome do Colega):").strip()
         
-        st.markdown("<p style='font-weight: bold; margin-bottom: 2px; color:#FFCC00 !important;'>Complete a frase com uma lembrança:</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-weight: bold; margin-bottom: 2px; color:#1A1A1A !important;'>Complete a frase com uma lembrança:</p>", unsafe_allow_html=True)
         texto_base = "Você não é um cupom do 99Food, mas quero te dizer/lembrar que..."
         
         exemplo_emotivo = "Ex: você me deu a maior força quando aquele projeto deu errado. Obrigado por ser essa parceira incrível!"
@@ -234,7 +238,7 @@ with aba_enviar:
                     "id": novo_id,
                     "remetente": remetente,
                     "destinatario": destinatario,
-                    "mensagem": message_completa if 'message_completa' in locals() else mensagem_completa,
+                    "mensagem": mensagem_completa,
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
                     "quem_palpitou": "",
                     "palpite": "",
@@ -261,11 +265,12 @@ with aba_mural:
             for msg in reversed(st.session_state.mensagens):
                 orig_id = msg["id"]
                 
+                # HTML do card com classes internas ajustadas para herdar os novos estilos pretos
                 card_html = f"""
                 <div class="delivery-card">
                     <div class="delivery-header">💛 Para: {msg['destinatario']}</div>
                     <div class="delivery-text">"{msg['mensagem']}"</div>
-                    <div style="font-size: 0.8rem; color: #777;">Status: Entregue com sucesso • {msg['data']}</div>
+                    <div style="font-size: 0.8rem; color: #999;">Status: Entregue com sucesso • {msg['data']}</div>
                 </div>
                 """
                 st.markdown(card_html, unsafe_allow_html=True)
@@ -273,7 +278,7 @@ with aba_mural:
                 # Se nenhum palpite foi feito, exibe o form de chute
                 if not msg["palpite_feito"]:
                     with st.form(key=f"form_palpite_{orig_id}"):
-                        st.markdown("<p style='font-weight: bold; margin-bottom: 2px; color: #FFCC00 !important;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
+                        st.markdown("<p style='font-weight: bold; margin-bottom: 2px; color: #1A1A1A !important;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
                         
                         identificacao = st.text_input("Seu Nome (Quem está adivinhando):", key=f"id_{orig_id}", placeholder="Digite seu nome para validar...").strip()
                         chute = st.text_input("Quem você acha que enviou?", key=f"chute_{orig_id}", placeholder="Nome do colega do chute...").strip()
