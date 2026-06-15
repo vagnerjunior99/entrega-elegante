@@ -14,7 +14,7 @@ def normalizar_nome(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
-# --- VISUAL: ARRAIÁ 99 CONSOLIDADO ---
+# --- VISUAL: ARRAIÁ 99 DEFINITIVO ---
 st.markdown("""
     <style>
     /* Fundo Amarelo Oficial da 99 */
@@ -49,6 +49,8 @@ st.markdown("""
         box-shadow: none !important;
         margin-bottom: 30px;
     }
+    
+    /* CORREÇÃO: Força o título a ser Amarelo 99 dentro da caixa */
     .header-box h1 {
         color: #FFCC00 !important;
         font-weight: 900 !important;
@@ -88,7 +90,7 @@ st.markdown("""
         color: #1A1A1A !important;
     }
 
-    /* --- ESTILIZAÇÃO DO BOTÃO DE ENVIO (CENTRALIZADO E IMPONENTE) --- */
+    /* --- ESTILIZAÇÃO DO BOTÃO DE ENVIO (CENTRALIZADO E SEM BORDA) --- */
     div[data-testid="stFormSubmitButton"] {
         text-align: center !important;
         display: flex;
@@ -99,7 +101,7 @@ st.markdown("""
     button[data-testid="stBaseButton-secondary"],
     .stButton > button {
         background-color: #1A1A1A !important;
-        border: 2px solid #FFFFFF !important;
+        border: none !important; /* CORREÇÃO: Removeu a borda branca */
         border-radius: 12px !important;
         padding: 12px 60px !important;
         min-width: 280px !important;
@@ -114,7 +116,7 @@ st.markdown("""
     }
     button[data-testid="stBaseButton-secondaryFormSubmit"]:hover,
     .stButton > button:hover {
-        border-color: #FFCC00 !important;
+        opacity: 0.95;
         transform: translateY(-2px);
     }
     
@@ -127,7 +129,7 @@ st.markdown("""
         margin-bottom: 30px;
     }
     
-    /* --- CAIXA DE ALERTA DO MURAL BLOQUEADO STYLED --- */
+    /* --- CAIXA DE ALERTA DO MURAL BLOQUEADO --- */
     .mural-bloqueado-box {
         background-color: #1A1A1A !important;
         border: 2px dashed #FFFFFF !important;
@@ -209,7 +211,7 @@ st.markdown("""
     <p style="margin-bottom: 8px;">O São João chegou na 99Food! Para celebrar, misturamos a tradição do <strong>Correio Elegante Junino</strong> com a agilidade da <strong>99Food</strong> em um arraiá de reconhecimento corporativo. Veja como participar:</p>
     <ul style="margin-top: 0; padding-left: 20px;">
         <li style="margin-bottom: 4px;"><strong>Enviar um Recadinho:</strong> Pule para a aba <em>"Enviar Mensagem"</em>, coloque o nome do colega e complete a frase lembrando de um momento em que essa pessoa foi uma verdadeira parceira e "salvou o seu dia" na empresa. O envio é 100% anônimo!</li>
-        <li style="margin-bottom: 4px;"><strong>Adivinhar no Mural:</strong> Na aba <em>"Mural de Entregas"</em>, ficam expostos todos os balões e mensagens do nosso time. Se achar um recado para você, clareie a mente e tente adivinhar o remetente. <strong>Cuidado:</strong> você só tem <u>uma única chance</u> para dar o seu palpite!</li>
+        <li style="margin-bottom: 4px;"><strong>Adivinhar no Mural:</strong> Na aba <em>"Mural de Entregas"</em>, ficam expostos os balões e mensagens do nosso time. Se achar um recado para você, clareie a mente e tente adivinhar o remetente. <strong>Cuidado:</strong> você os tem <u>uma única chance</u> para dar o seu palpite!</li>
         <li>⚠️ <strong>Regra do Arraiá:</strong> O mural de entregas é exclusivo para quem também espalhou carinho! Você só conseguirá visualizar os recados e dar seus palpites após enviar pelo menos uma mensagem para um colega nesta sessão.</li>
     </ul>
 </div>
@@ -260,7 +262,6 @@ with aba_mural:
     st.markdown('<div class="centered-title">👀 Quem recebeu uma entrega hoje?</div>', unsafe_allow_html=True)
     
     if not st.session_state.ja_enviou:
-        # Caixa estilizada preta com letras brancas substituindo o warning padrão apagado
         st.markdown("""
         <div class="mural-bloqueado-box">
             <p>🔒 Ei, sô! Para conseguir ver o Mural e brincar de adivinhar, você precisa enviar um recadinho primeiro. Vá na aba 'Enviar Mensagem' e colabore com o time!</p>
