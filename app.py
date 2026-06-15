@@ -5,7 +5,7 @@ from datetime import datetime
 # Configuração da página
 st.set_page_config(page_title="Entrega Elegante 99Food", page_icon="🌽", layout="centered")
 
-# --- INJEÇÃO DE IDENTIDADE VISUAL COMPLEMENTAR ---
+# --- INJEÇÃO DE IDENTIDADE VISUAL BLINDADA (BOTOES PRETOS + LETRAS AMARELAS) ---
 st.markdown("""
     <style>
     /* Cor de fundo geral da página */
@@ -19,7 +19,7 @@ st.markdown("""
         color: #1A1A1A !important;
     }
     
-    /* Ajusta os campos de entrada de texto (Inputs e Textareas) */
+    /* Ajusta os campos de entrada de texto */
     input, textarea {
         background-color: #FFFFFF !important;
         color: #1A1A1A !important;
@@ -79,25 +79,30 @@ st.markdown("""
         color: #1A1A1A !important;
     }
 
-    /* --- BOTÃO PRETO COM TEXTO AMARELO (ISOLADO) --- */
-    div.stButton > button {
+    /* --- ALVO GLOBAL EM TODOS OS BOTÕES DA PÁGINA --- */
+    button[data-testid="stBaseButton-secondaryFormSubmit"], 
+    button[data-testid="stBaseButton-secondary"],
+    .stButton > button {
         background-color: #1A1A1A !important;
         border: 2px solid #FFCC00 !important;
         border-radius: 8px !important;
         padding: 10px 24px !important;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.15) !important;
         width: 100% !important;
-        display: block !important;
     }
     
-    /* Força cirurgicamente a cor amarela no texto interno do botão */
-    div.stButton > button p {
+    /* Força a cor amarela no texto interno de QUALQUER botão */
+    button[data-testid="stBaseButton-secondaryFormSubmit"] p,
+    button[data-testid="stBaseButton-secondary"] p,
+    .stButton > button p {
         color: #FFCC00 !important;
         font-weight: bold !important;
     }
     
-    /* Efeito Hover do Botão */
-    div.stButton > button:hover {
+    /* Efeito Hover global */
+    button[data-testid="stBaseButton-secondaryFormSubmit"]:hover,
+    button[data-testid="stBaseButton-secondary"]:hover,
+    .stButton > button:hover {
         background-color: #262626 !important;
         border-color: #E6B800 !important;
     }
@@ -202,4 +207,60 @@ with aba_mural:
         st.info("Nenhuma entrega feita ainda. Seja o primeiro!")
     else:
         for msg in reversed(st.session_state.mensagens):
-            orig
+            orig_id = msg["id"]
+            
+            card_html = f"""
+            <div class="delivery-card">
+                <div class="delivery-header">💛 Para: {msg['destinatario']}</div>
+                <div class="delivery-text">"{msg['mensagem']}"</div>
+                <div style="font-size: 0.8rem; color: #888;">Status: Entregue com sucesso • {msg['data']}</div>
+            </div>
+            """
+            st.markdown(card_html, unsafe_allow_html=True)
+            
+            if not msg["palpite_feito"]:
+                with st.form(key=f"form_palpite_{orig_id}"):
+                    st.markdown("<p style='font-weight: bold; margin-bottom: 2px;'>🕵️ Adivinhe quem te mandou esse recado:</p>", unsafe_allow_html=True)
+                    chute = st.text_input("Quem você acha que enviou?", key=f"chute_{orig_id}", placeholder="Nome do colega...", label_visibility="collapsed").strip()
+                    botao_palpite = st.form_submit_button("Confirmar Palpite (Apenas 1 chance!) 🔒")
+                    
+                    if botao_palpite:
+                        if chute:
+                            for m in st.session_state.mensagens:
+                                if m["id"] == orig_id:
+                                    m["palpite"] = chute
+                                    m["palpite_feito"] = True
+                            st.success(f"Palpite registrado: '{chute}'!")
+                            st.rerun()
+                        else:
+                            st.warning("Digite um nome antes de confirmar.")
+            else:
+                st.markdown(f"<p style='color: #2E7D32; font-weight: bold; margin-top: -10px; margin-bottom: 20px;'>🔒 Palpite já enviado: Você achou que foi '{msg['palpite']}'.</p>", unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+
+# --- ÁREA DO ADMINISTRADOR ---
+st.markdown("---")
+st.markdown("### 🛠️ Área do Administrador")
+with st.expander("Clique aqui para baixar o relatório final"):
+    if len(st.session_state.mensagens) > 0:
+        df = pd.DataFrame(st.session_state.mensagens)
+        
+        df['Acertou?'] = df.apply(
+            lambda r: "Sim" if r['palpite'].lower() in r['remetente'].lower() and r['palpite'] != "" else ("Não" if r['palpite_feito'] else "Não palpitou ainda"), 
+            axis=1
+        )
+        
+        df_relatorio = df[["data", "destinatario", "mensagem", "remetente", "palpite", "Acertou?"]]
+        df_relatorio.columns = ["Data/Hora", "Quem Recebeu", "Mensagem", "Remetente Real (Anônimo)", "Palpite da Pessoa", "Acertou o Palpite?"]
+        
+        csv = df_relatorio.to_csv(index=False).encode('utf-8-sig')
+        
+        st.download_button(
+            label="📥 Baixar Planilha de Acertos (Excel/CSV)",
+            data=csv,
+            file_name="relatorio_final_entrega_elegante.csv",
+            mime="text/csv"
+        )
+    else:
+        st.text("Nenhum dado para exportar ainda.")
