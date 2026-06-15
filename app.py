@@ -14,7 +14,7 @@ def normalizar_nome(texto):
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
-# --- VISUAL: ARRAIÁ 99 CONSOLIDADO ---
+# --- VISUAL: ARRAIÁ 99 CORRIGIDO ---
 st.markdown("""
     <style>
     /* Fundo Amarelo Oficial da 99 */
@@ -44,32 +44,27 @@ st.markdown("""
         background-color: #1A1A1A !important;
         border: none !important;
         border-radius: 20px;
-        padding: 25px;
+        padding: 30px 20px;
         text-align: center;
         box-shadow: none !important;
         margin-bottom: 30px;
     }
     
-    /* Garante que o container interno herde o alinhamento central */
-    .header-box [data-testid="stMarkdownContainer"] {
-        text-align: center !important;
-    }
-    
-    /* Força o título nativo do Streamlit a ficar Amarelo dentro do cabeçalho */
-    .header-box h1 {
+    /* Estilização do Título Interno em Amarelo */
+    .header-title {
         color: #FFCC00 !important;
         font-weight: 900 !important;
-        text-align: center !important;
         font-size: 2.3rem !important;
-        margin-top: 10px !important;
-        margin-bottom: 5px !important;
+        margin-top: 15px !important;
+        margin-bottom: 10px !important;
     }
     
-    .divisor-bandeirinhas {
+    /* Estilização do Divisor de Bandeirinhas Interno */
+    .header-divisor {
         font-size: 1.5rem;
         letter-spacing: 8px;
-        margin-top: 10px;
-        text-align: center !important;
+        color: #FFFFFF !important;
+        margin-top: 5px;
     }
     
     /* --- CONFIGURAÇÃO DAS ABAS (CENTRALIZADAS E MAIORES) --- */
@@ -204,20 +199,15 @@ if 'mensagens' not in st.session_state:
 if 'ja_enviou' not in st.session_state:
     st.session_state.ja_enviou = False
 
-# --- CABEÇALHO UNIFICADO CORRIGIDO COM FUNÇÕES NATIVAS DO STREAMLIT ---
-with st.container():
-    st.markdown('<div class="header-box">', unsafe_allow_html=True)
-    
-    # Imagem do Logo
-    st.image("https://99app.com/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fx9sul3ikm35w%2F2kYcs2M15uM3cYchuoDRvG%2Ffd6069a06d44476d143559243510a929%2Fimage.png&w=384&q=75", width=95)
-    
-    # Título nativo do Streamlit (Isso resolve a quebra e garante o texto amarelo)
-    st.title("🔥 ARRAIÁ 99Food")
-    
-    # Divisor de bandeirinhas
-    st.markdown('<div class="divisor-bandeirinhas" style="color: #FFFFFF !important;">🎏🍿🌽🔥🌽🍿🎏</div>', unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+# --- CABEÇALHO UNIFICADO COMPLETO EM HTML PURO ---
+# Isso garante que o logo, o título amarelo e as bandeirinhas fiquem todos travados dentro do bloco preto.
+st.markdown("""
+<div class="header-box">
+    <img src="https://99app.com/_next/image/?url=https%3A%2F%2Fimages.ctfassets.net%2Fx9sul3ikm35w%2F2kYcs2M15uM3cYchuoDRvG%2Ffd6069a06d44476d143559243510a929%2Fimage.png&w=384&q=75" width="95" style="display: block; margin: 0 auto;">
+    <div class="header-title">🔥 ARRAIÁ 99Food</div>
+    <div class="header-divisor">🎏🍿🌽🔥🌽🍿🎏</div>
+</div>
+""", unsafe_allow_html=True)
 
 # --- REGRAS COMPLETAS RECUPERADAS ---
 st.markdown("""
@@ -258,7 +248,7 @@ with aba_enviar:
                     "id": novo_id,
                     "remetente": remetente,
                     "destinatario": destinatario,
-                    "mensagem": mensagem_completa,
+                    "mensagem": message_completa if 'message_completa' in locals() else mensagem_completa,
                     "data": datetime.now().strftime("%d/%m/%Y %H:%M"),
                     "quem_palpitou": "",
                     "palpite": "",
