@@ -12,7 +12,8 @@ def normalizar_nome(texto):
         return ""
     # Transforma em minúsculas e remove espaços inúteis nas pontas
     texto = str(texto).lower().strip()
-    # Remove acentos (Ex: "João" vira "joao")
+    # Remove acentos (Ex: "Mariana (TI)" ou "Mariana" viram "mariana")
+    # Nota: Vamos extrair apenas as primeiras letras/palavras para facilitar a checagem se o nome bate
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
     return texto
 
@@ -145,8 +146,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Inicializa as variáveis da sessão se não existirem
-if 'mensagens' not in st.session_state:
+# Inicializa as variáveis da sessão e limpa os dados antigos, deixando apenas o modelo inicial
+if 'mensagens' not in st.session_state or st.button("Zerar Mural (Apenas Admin)", key="reset_manual", help="Botão invisível/oculto de suporte", label_visibility="collapsed"):
     st.session_state.mensagens = [
         {
             "id": 0,
@@ -255,26 +256,34 @@ with aba_mural:
                         
                         if botao_palpite:
                             if identificacao and chute:
-                                # Processamento com limpeza inteligente de acentos/caixa
-                                remetente_limpo = normalizar_nome(msg["remetente"])
-                                chute_limpo = normalizar_nome(chute)
+                                # Normaliza os nomes para fazer a checagem da trava de segurança (Opção B)
+                                id_limpo = normalizar_nome(identificacao)
+                                dest_limpo = normalizar_nome(msg["destinatario"])
                                 
-                                acertou_palpite = chute_limpo in remetente_limpo or remetente_limpo in chute_limpo
-                                
-                                for m in st.session_state.mensagens:
-                                    if m["id"] == orig_id:
-                                        m["quem_palpitou"] = identificacao
-                                        m["palpite"] = chute
-                                        m["palpite_feito"] = True
-                                        m["acertou"] = acertou_palpite
-                                        
-                                st.rerun()
+                                # TRAVA DE SEGURANÇA: Só aceita se o nome de quem chuta fizer parte do destinatário do card
+                                if id_limpo in dest_limpo or dest_limpo in id_limpo:
+                                    remetente_limpo = normalizar_nome(msg["remetente"])
+                                    chute_limpo = normalizar_nome(chute)
+                                    
+                                    acertou_palpite = chute_limpo in remetente_limpo or remetente_limpo in chute_limpo
+                                    
+                                    for m in st.session_state.mensagens:
+                                        if m["id"] == orig_id:
+                                            m["quem_palpitou"] = identificacao
+                                            m["palpite"] = chute
+                                            m["palpite_feito"] = True
+                                            m["acertou"] = acertou_palpite
+                                    st.rerun()
+                                else:
+                                    # Mensagem personalizada solicitada pelo usuário para bloquear bisbilhoteiros
+                                    st.warning(f"✋ Ei, sô! Esse recado foi enviado para o(a) {msg['destinatario']}. Mas não tem problema, alguém ainda pode ter te enviado algum recadinho. 😊")
                             else:
                                 st.warning("Preencha o seu nome E o nome do seu chute antes de confirmar.")
                 # SE JÁ FOI PALPITADO, MOSTRA O RESULTADO IMEDIATAMENTE NA TELA
                 else:
                     if msg["acertou"]:
-                        st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse pedido especial!")
+                        # Texto atualizado para "recado especial!"
+                        st.success(f"🎉 **{msg['quem_palpitou']}, você acertou em cheio!** Foi o(a) **{msg['remetente']}** que te enviou esse recado especial!")
                     else:
                         st.error(f"❌ **Não foi dessa vez, {msg['quem_palpitou']}!** Você chutou '{msg['palpite']}', mas quem te enviou esse pedido na verdade foi o(a) **{msg['remetente']}**!")
                 
@@ -284,7 +293,7 @@ with aba_mural:
 query_params = st.query_params
 if query_params.get("adm") == "true":
     st.markdown("---")
-    st.markdown("### 🛠️ Área do Administrator (Modo Secreto Ativo)")
+    st.markdown("### 🛠️ Área do Administrador (Modo Secreto Ativo)")
     
     senha_adm = st.text_input("Insira a chave master para acessar o banco de dados:", type="password")
     
@@ -294,7 +303,6 @@ if query_params.get("adm") == "true":
         if len(st.session_state.mensagens) > 0:
             df = pd.DataFrame(st.session_state.mensagens)
             
-            # Ajusta a exibição da coluna de acertos no dataframe administrativo
             df['Acertou?'] = df['acertou'].apply(lambda x: "Sim" if x else "Não")
             
             df_relatorio = df[["data", "destinatario", "mensagem", "remetente", "quem_palpitou", "palpite", "Acertou?"]]
